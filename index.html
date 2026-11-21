@@ -909,6 +909,12 @@ body.foco[data-fv="col"] .vista.on>.col,body.foco[data-fv="tablet"] .vista.on>.s
 .pres-chip.on{opacity:1;transform:none}
 .pres-k{background:var(--azul);color:#fff;border-radius:6px;padding:1px 7px;font-size:12px;letter-spacing:.05em}
 .w-h1:focus{outline:none}
+.w-reserva > .w-huecos{grid-column:-2 / -1}
+.w-huecos{grid-template-columns:repeat(auto-fit,minmax(118px,1fr))!important;gap:12px!important}
+.w-huecos div{min-width:0}
+.w-huecos b{font-size:14px;white-space:nowrap}
+.w-huecos button{font-size:15px!important;white-space:nowrap;padding:6px 10px;min-width:0;width:100%}
+.w-huecos button small{white-space:nowrap;font-size:11px}
 .bts-caja{display:flex;gap:8px;flex-wrap:wrap}
 .ficha-acc{margin-top:10px;border-top:1px solid #E1E0DF;padding-top:6px}.ficha-acc .ficha-m-t{font-size:12px}.ficha-acc .fila{font-size:13px}
 .ficha-m-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin-top:8px;font-size:12px;color:var(--mut)}
