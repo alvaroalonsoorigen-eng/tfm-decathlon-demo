@@ -4368,5 +4368,327 @@ window.KPI=KPI; // la demo comprueba window.KPI al abrir la pestaña
 // Si la pestaña ya está a la vista al cargar (enlace directo #kpi o página independiente), se pinta sola
 {const v=document.getElementById('kpi');if(v&&getComputedStyle(v).display!=='none'){try{KPI.render()}catch(e){}}}
 </script>
+<!-- ===== DEMO GUIADA DE 2 MINUTOS (se pasa con flechas o con el mando) ===== -->
+<style id="d2-estilos">
+body.demo2 #focoBar,body.demo2 .pres-btn,body.demo2 #presChip,body.demo2 #tour{display:none!important}
+body.demo2.foco main{padding-top:14px!important;padding-bottom:calc(var(--d2-cap,170px) / var(--zf,1) + 20px)!important}
+body.demo2.foco #kpi{--k-top:0px}
+body.demo2 ::-webkit-scrollbar{width:0;height:0}
+.d2-foco{position:fixed;left:0;top:0;width:0;height:0;border-radius:16px;pointer-events:none;z-index:9990;opacity:0;
+  box-shadow:0 0 0 3px #3643BA,0 0 0 8px rgba(122,255,167,.85),0 0 0 200vmax rgba(18,22,58,.42);
+  transition:left .45s cubic-bezier(.2,.8,.2,1),top .45s cubic-bezier(.2,.8,.2,1),width .45s cubic-bezier(.2,.8,.2,1),height .45s cubic-bezier(.2,.8,.2,1),opacity .3s}
+.d2-foco.on{opacity:1}
+.d2-dedo{position:fixed;left:0;top:0;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;pointer-events:none;z-index:9995;opacity:0;
+  background:rgba(54,67,186,.28);border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.25);transition:left .35s ease,top .35s ease,opacity .2s}
+.d2-dedo.on{opacity:1}
+.d2-dedo.toca{animation:d2toca .45s ease}
+.d2-dedo.toca::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:3px solid #3643BA;animation:d2onda .6s ease-out}
+@keyframes d2toca{0%{transform:scale(1)}40%{transform:scale(.72)}100%{transform:scale(1)}}
+@keyframes d2onda{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.4);opacity:0}}
+.d2-cap{position:fixed;left:16px;right:16px;bottom:18px;transform:translateY(16px);z-index:9996;opacity:0;
+  background:#fff;border-radius:18px;box-shadow:0 10px 40px rgba(16,20,60,.22),0 0 0 1px rgba(16,20,60,.06);overflow:hidden;
+  font-family:Inter,system-ui,sans-serif;color:#101010;transition:opacity .3s,transform .3s}
+.d2-cap.on{opacity:1;transform:translateY(0)}
+.d2-cap-in{display:flex;gap:22px;align-items:center;padding:clamp(14px,1.6vw,22px) clamp(18px,2vw,28px) clamp(14px,1.5vw,20px);border-left:8px solid var(--d2c,#3643BA)}
+.d2-num{flex:0 0 auto;width:clamp(44px,4vw,58px);height:clamp(44px,4vw,58px);border-radius:50%;display:grid;place-items:center;font:700 clamp(18px,1.7vw,24px)/1 "Inter Tight",Inter,sans-serif;background:var(--d2c,#3643BA);color:#fff}
+.d2-txt{flex:1;min-width:0}
+.d2-k{font:600 clamp(12px,1vw,14px)/1.2 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--d2c,#3643BA);margin-bottom:4px}
+.d2-t{font:700 clamp(22px,2.3vw,34px)/1.15 "Inter Tight",Inter,sans-serif;letter-spacing:-.01em;margin:0}
+.d2-s{font:400 clamp(15px,1.35vw,20px)/1.4 Inter,sans-serif;color:#3a3a3a;margin:6px 0 0}
+.d2-ref{flex:0 0 auto;align-self:flex-end;font:500 clamp(11px,.9vw,13px)/1.3 Inter,sans-serif;color:#616161;text-align:right;max-width:190px}
+.d2-barra{display:flex;gap:4px;padding:0 clamp(18px,2vw,28px) 12px clamp(26px,2.5vw,36px)}
+.d2-barra i{flex:1;height:5px;border-radius:3px;background:#E1E0DF;transition:background .3s}
+.d2-barra i.a1{--c:#3643BA}.d2-barra i.a2{--c:#00A35C}.d2-barra i.k{--c:#7A4DD8}.d2-barra i.x{--c:#3643BA}
+.d2-barra i.hecho{background:var(--c);opacity:.45}.d2-barra i.on{background:var(--c)}
+.d2-reloj{position:fixed;right:16px;top:12px;z-index:9997;font:600 14px/1 Inter,sans-serif;color:#616161;background:#fff;border:1px solid #E1E0DF;border-radius:999px;padding:8px 12px;display:none}
+.d2-reloj.on{display:block}
+.d2-pant{position:fixed;inset:0;z-index:9998;background:#fff;display:none;align-items:center;justify-content:center;text-align:center;font-family:Inter,system-ui,sans-serif;color:#101010;padding:24px}
+.d2-pant.on{display:flex}
+.d2-pant .logo-d2 svg{height:clamp(22px,2.4vw,34px);width:auto;fill:#3643BA}
+.d2-pant h1{font:700 clamp(32px,4vw,58px)/1.08 "Inter Tight",Inter,sans-serif;letter-spacing:-.02em;margin:26px 0 12px}
+.d2-pant p.lead{font:400 clamp(17px,1.6vw,23px)/1.45 Inter,sans-serif;color:#3a3a3a;margin:0 auto;max-width:860px}
+.d2-caps{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:34px 0 0}
+.d2-caps div{border:1px solid #E1E0DF;border-radius:16px;padding:16px 20px;min-width:230px;text-align:left;border-top:6px solid var(--c)}
+.d2-caps b{display:block;font:700 clamp(17px,1.4vw,21px)/1.2 "Inter Tight",Inter,sans-serif}
+.d2-caps span{display:block;font-size:clamp(13px,1vw,15px);color:#616161;margin-top:4px}
+.d2-pista{margin-top:34px;font-size:14px;color:#616161}
+.d2-pista kbd{display:inline-block;border:1px solid #c9c9c9;border-bottom-width:2px;border-radius:6px;padding:2px 8px;font:600 13px Inter,sans-serif;color:#101010;background:#fff}
+.d2-qrfila{display:flex;gap:40px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:28px}
+.d2-qr{background:#fff;padding:14px;border-radius:16px;border:1px solid #E1E0DF;line-height:0}
+.d2-qrtx{text-align:left;max-width:520px}
+.d2-qrtx b{font:700 clamp(18px,1.6vw,24px)/1.25 "Inter Tight",Inter,sans-serif;display:block}
+.d2-qrtx p{font-size:clamp(15px,1.25vw,18px);line-height:1.45;color:#3a3a3a;margin:8px 0 0}
+.d2-qrtx code{font:600 clamp(13px,1vw,15px) ui-monospace,Menlo,monospace;color:#3643BA;word-break:break-all}
+.d2-aviso{position:absolute;left:0;right:0;bottom:18px;font-size:12px;color:#8a8a8a}
+.d2-blanco{position:fixed;inset:0;z-index:10000;background:#fff;display:none}
+.d2-blanco.on{display:block}
+.btn-foco.d2-btn{border-color:#3643BA;color:#3643BA}
+@media (prefers-reduced-motion:reduce){.d2-foco,.d2-dedo,.d2-cap{transition:none}}
+</style>
+<script>
+/* Demo guiada de 2 minutos. Se activa con el botón «Demo de 2 minutos», la tecla D o abriendo el archivo con #demo.
+   Avanza con flecha derecha, flecha abajo, Av Pág, espacio o el botón del mando; retrocede con flecha izquierda, flecha arriba o Re Pág.
+   B o punto: pantalla en blanco. R: reloj para el presentador. Esc: salir. Cada paso parte de un estado limpio, así que retroceder nunca falla. */
+(function(){
+if(typeof MODO!=='undefined'&&MODO)return;
+const C={a1:'#3643BA',a2:'#00A35C',k:'#7A4DD8',x:'#3643BA'};
+const NOMCAP={a1:'Acción 1 · Decathlon Member',a2:'Acción 2 · Banco de Pruebas',k:'Cuadro de mando de los KPI',x:''};
+const D2={on:false,i:-1,rapido:false,gen:0,cola:Promise.resolve(),objetivo:null,t0:0,bloqPerfil:0};
+window.D2=D2;
+const q=s=>typeof s==='string'?document.querySelector(s):s;
+const qTxt=(sel,txt)=>[...document.querySelectorAll(sel)].find(e=>e.textContent.includes(txt));
+const zf=()=>parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--zf'))||1;
+
+/* ---------- piezas visuales ---------- */
+const foco=document.createElement('div');foco.className='d2-foco';
+const dedo=document.createElement('div');dedo.className='d2-dedo';
+const cap=document.createElement('div');cap.className='d2-cap';cap.setAttribute('role','status');cap.setAttribute('aria-live','polite');
+const reloj=document.createElement('div');reloj.className='d2-reloj';
+const pant=document.createElement('div');pant.className='d2-pant';
+const blanco=document.createElement('div');blanco.className='d2-blanco';
+document.body.append(foco,dedo,cap,reloj,pant,blanco);
+const logoSVG=()=>{const s=document.querySelector('.top .logo svg');return s?s.outerHTML:'<b style="color:#3643BA;font-size:28px">DECATHLON</b>';};
+
+/* el subtítulo se coloca al lado del móvil para no taparlo; en el resto de pantallas va centrado */
+function colocarCap(){
+  const W=innerWidth,m=q('#movil');let L=Math.max(16,(W-1180)/2),Rr=L;
+  const v=typeof vistaActual==='function'?vistaActual():'';
+  if(m&&(v==='a1'||v==='a2')&&m.getClientRects().length){const r=m.getBoundingClientRect();
+    if(r.width>0&&r.bottom>0&&r.top<innerHeight){if(r.left+r.width/2<W/2){L=Math.round(r.right+18);Rr=16;}else{L=16;Rr=Math.round(W-r.left+18);}}}
+  if(W-L-Rr<420){L=16;Rr=16;}
+  if(cap.style.left!==L+'px'||cap.style.right!==Rr+'px'){cap.style.left=L+'px';cap.style.right=Rr+'px';
+    if(cap.classList.contains('on'))document.documentElement.style.setProperty('--d2-cap',(cap.offsetHeight+28)+'px');}
+}
+/* el foco sigue al elemento aunque se mueva o haga scroll */
+function bucle(){
+  if(!D2.on){foco.classList.remove('on');return;}
+  colocarCap();
+  const el=D2.objetivo&&q(D2.objetivo);
+  if(el&&el.isConnected&&el.getClientRects().length){
+    const r=el.getBoundingClientRect(),m=8,cr=cap.getBoundingClientRect(),solapa=cap.classList.contains('on')&&r.right>cr.left&&r.left<cr.right,capH=solapa?cap.offsetHeight+28:0;
+    const top=Math.max(6,r.top-m),bot=Math.min(innerHeight-capH-6,r.bottom+m);
+    foco.style.left=Math.max(6,r.left-m)+'px';foco.style.top=top+'px';
+    foco.style.width=Math.max(0,Math.min(innerWidth-12,r.right+m)-Math.max(6,r.left-m))+'px';foco.style.height=Math.max(0,bot-top)+'px';
+    foco.classList.add('on');
+  } else foco.classList.remove('on');
+  requestAnimationFrame(bucle);
+}
+/* lleva el elemento al centro de la zona visible, por encima del subtítulo */
+function verEl(el){
+  el=q(el);if(!el)return;
+  const cr=cap.getBoundingClientRect(),er=el.getBoundingClientRect(),solapa=cap.classList.contains('on')&&er.right>cr.left&&er.left<cr.right;
+  const capH=solapa?cap.offsetHeight+28:0, zona=innerHeight-capH;
+  let p=el.parentElement;
+  while(p&&p!==document.body){const s=getComputedStyle(p);if(/(auto|scroll)/.test(s.overflowY)&&p.scrollHeight>p.clientHeight+4){const pr=p.getBoundingClientRect(),r=el.getBoundingClientRect();
+      const vis=Math.min(pr.bottom,zona)-pr.top;p.scrollTop+=(r.top-pr.top)-Math.max(8,(vis-r.height)/2);}p=p.parentElement;}
+  const r=el.getBoundingClientRect();
+  if(r.height>zona-16){if(r.top<0||r.top>zona*.4)window.scrollBy(0,r.top-8);}
+  else if(r.top<8||r.bottom>zona-8){window.scrollBy(0,r.top-Math.max(8,(zona-r.height)/2));}
+}
+function enfocar(sel){const el=q(sel);D2.objetivo=el||null;if(el)verEl(el);}
+const espera=ms=>D2.rapido?Promise.resolve():new Promise(r=>setTimeout(r,ms));
+async function tocar(sel){
+  const el=q(sel);if(!el)return;
+  if(D2.rapido)return;
+  verEl(el);await espera(60);
+  const r=el.getBoundingClientRect();
+  dedo.style.left=(r.left+r.width/2)+'px';dedo.style.top=(r.top+r.height/2)+'px';dedo.classList.add('on');
+  await espera(300);dedo.classList.remove('toca');void dedo.offsetWidth;dedo.classList.add('toca');
+  await espera(260);
+  setTimeout(()=>dedo.classList.remove('on'),260);
+}
+function vista(v,ver){
+  document.body.classList.add('foco');
+  if(typeof cerrarModal==='function'&&q('#modal')&&q('#modal').classList.contains('on'))cerrarModal();
+  irVista(v);
+  if(ver&&typeof focoVer!=='undefined')focoVer[vistaActual()]=ver;
+  pintarFoco();ajustarFoco();window.scrollTo(0,0);
+}
+function rotulo(P,n,total){
+  const c=C[P.cap]||C.x;
+  cap.style.setProperty('--d2c',c);
+  cap.innerHTML=`<div class="d2-cap-in"><div class="d2-num">${n}</div><div class="d2-txt">${P.cap&&NOMCAP[P.cap]?`<div class="d2-k">${NOMCAP[P.cap]}</div>`:''}<h2 class="d2-t">${P.t}</h2>${P.s?`<p class="d2-s">${P.s}</p>`:''}</div>${P.r?`<div class="d2-ref">TFM · ${P.r}</div>`:''}</div>
+    <div class="d2-barra" aria-hidden="true">${PASOS2.map((x,j)=>x.pant?'':`<i class="${x.cap||'x'} ${j<D2.i?'hecho':j===D2.i?'on':''}"></i>`).join('')}</div>`;
+  colocarCap();cap.classList.add('on');
+  document.documentElement.style.setProperty('--d2-cap',(cap.offsetHeight+28)+'px');
+}
+function pantalla(html){pant.innerHTML=html;pant.classList.add('on');cap.classList.remove('on');D2.objetivo=null;}
+function sinPantalla(){pant.classList.remove('on');pant.innerHTML='';}
+
+/* estado limpio: Elena recién llegada, sin permisos, sin pruebas, cuadro en el escenario base */
+function base(){
+  try{cerrarModal();}catch(e){} try{cerrarHoja();}catch(e){}
+  try{colaPush.length=0;cerrarPush();}catch(e){}
+  try{tourFin();}catch(e){}
+  reiniciar();
+  try{if(typeof cobrar==='function')cobrar._t=0;}catch(e){}
+  const tm=q('#tpvMsg');if(tm){tm.hidden=true;tm.textContent='';}
+  const imp=q('#tpvImp');if(imp)imp.value='64.90';const di=q('#tpvDisc');if(di)di.value='montana';const ch=q('#tpvCheque');if(ch)ch.checked=true;
+  try{webPag='inicio';}catch(e){}
+  try{const k=q('#kpi-detalle');if(k&&k.classList.contains('k-on'))q('#kpi-cerrar').click();}catch(e){}
+}
+const kpiCerrar=()=>{const k=q('#kpi-detalle');if(k&&k.classList.contains('k-on')){const b=q('#kpi-cerrar');b&&b.click();}};
+function kpiBase(pag,corte){
+  vista('kpi');kpiCerrar();
+  if(window.KPI){KPI.escenario('base');KPI.corte(corte);KPI.ir(pag);}
+  window.scrollTo(0,0);
+}
+
+/* ---------- el guion: 15 pasos, unos 8 segundos de pantalla cada uno ---------- */
+const PASOS2=[
+ {pant:true,go:async()=>{
+   vista('a1','todo');try{irApp('inicio');}catch(e){}
+   pantalla(`<div><div class="logo-d2">${logoSVG()}</div><h1>Las dos acciones, funcionando</h1><p class="lead">Una demostración en dos minutos de la Acción 1, la Acción 2 y el cuadro de mando con el que se controlan.</p>
+   <div class="d2-caps"><div style="--c:${C.a1}"><b>Acción 1</b><span>Rediseño de Decathlon Member</span></div><div style="--c:${C.a2}"><b>Acción 2</b><span>Banco de Pruebas</span></div><div style="--c:${C.k}"><b>Cuadro de mando</b><span>KPI y puertas de decisión</span></div></div>
+   <div class="d2-pista">Avanza con <kbd>→</kbd> o con el mando · <kbd>←</kbd> vuelve · <kbd>Esc</kbd> sale</div></div>
+   <div class="d2-aviso">Prototipo académico del TFM del Máster GESCO de ESIC. No es una aplicación oficial de Decathlon. Datos simulados.</div>`);
+ }},
+ {cap:'a1',t:'Elena abre su app: puntos, nivel y semana deportiva',s:'El programa premia la relación, no solo el gasto: tres niveles (Deportista, Constante y Experto) que también se ganan haciendo deporte.',r:'Tabla 13 y epígrafe 14.1',
+  go:async()=>{vista('a1','todo');irApp('membresia');await espera(250);enfocar('#appCuerpo .nivel-card');await espera(1400);enfocar('#appCuerpo .saldo-bloque');}},
+ {cap:'a1',t:'En caja, una sola pregunta: «¿Eres Decathlon Member?»',s:'El ticket queda identificado, se aplica su mejor cheque y los puntos llegan a su app en el acto.',
+  go:async()=>{vista('a1','todo');irApp('membresia');enfocar('.tpv .pregunta');await espera(1100);
+   await tocar('.tpv .opc button.prin');cobrar._t=0;cobrar('elena');await espera(500);enfocar('#ultTickets');await espera(1600);enfocar('#movil');}},
+ {cap:'a1',t:'El deporte también suma',s:'Con su permiso, 120 minutos a la semana dan 500 puntos y 15 puntos de nivel. Solo minutos y deporte: nunca la ruta GPS ni el pulso.',r:'Tabla 13 y epígrafe 14.1',
+  go:async()=>{vista('a1','todo');irApp('acumula');await espera(200);enfocar('#appCuerpo .tarj');await espera(900);
+   conectarConPermiso('strava');await espera(900);
+   const b=qTxt('#appCuerpo button','Sincronizar');if(b){enfocar(b);await tocar(b);}sincronizar();await espera(700);
+   irApp('membresia');await espera(200);enfocar('#appCuerpo .semana-card');}},
+ {cap:'a1',t:'Elena sube a Constante sin gastar más',s:'Sus semanas activas la llevan a 600 puntos de nivel y desbloquea ventajas nuevas.',r:'Tabla 13 y epígrafe 14.1',
+  go:async()=>{vista('a1','todo');const l=document.body.dataset.listo;delete document.body.dataset.listo;preset('corredor');if(l)document.body.dataset.listo=l;
+   if(!D2.rapido){await espera(350);try{celebrarNivel(E.s.nivel);}catch(e){}}await espera(100);enfocar('#movil');}},
+ {cap:'a1',t:'La misma cuenta, también en decathlon.es',s:'Nivel, cheques y perfil técnico iguales en tienda, app y web. En Constante el cheque de 3 € ya no exige compra mínima.',r:'Epígrafe 14.3 y Tabla 15',
+  go:async()=>{try{cerrarHoja();}catch(e){}vista('web');irWeb('membresia');await espera(300);enfocar('#webPagina .w-hero2');await espera(1700);enfocar(q('#webPagina #wCanje + .w-cheque')||'#webPagina #wCanje');}},
+ {cap:'a2',t:'La web enseña la espera real del Banco de Pruebas',s:'Y lleva la demanda a las horas de menos afluencia: Elena reserva su cita de asesoramiento en hora valle.',r:'Epígrafe 15.4',
+  go:async()=>{vista('web2');await espera(300);enfocar('#webPagina .w-vivo');await espera(1800);enfocar('#webPagina .w-reserva');}},
+ {cap:'a2',t:'El experto guía la prueba desde su tableta',s:'Mide la pisada, Elena prueba dos modelos y puntúa cada uno. Quince minutos, o cinco en hora punta.',r:'Epígrafe 15.4 y Tabla A12',
+  go:async()=>{vista('a2','todo');irTab('prueba');wz.disc='running';wz.elena=true;renderTablet();await espera(200);
+   enfocar('#tabCuerpo');const be=qTxt('#tabCuerpo button','Empezar prueba guiada');await espera(500);if(be)await tocar(be);empezar();await espera(300);
+   enfocar('#tabCuerpo');await espera(1000);
+   const bs=qTxt('#tabCuerpo button','Siguiente: comparar');if(bs)await tocar(bs);
+   wz.paso=2;if(!wz.a){const p=DISC[wz.disc].prods;wz.a=p[0].id;wz.b=p[1].id;}renderTablet();await espera(150);enfocar('#tabCuerpo .cmp');
+   const notas=[['a','c',5],['b','c',4],['a','a',4],['b','a',3],['a','s',5],['b','s',3]];
+   for(const [l,k,v] of notas){wz['p'+l][k]=v;renderTablet();D2.objetivo=q('#tabCuerpo .cmp');await espera(260);}}},
+ {cap:'a2',t:'Elena decide qué se guarda, desde su móvil',s:'Autoriza guardar sus medidas: la prueba suma 50 puntos de nivel y su perfil técnico aparece al momento en la app.',r:'Epígrafe 15.3 y Tabla A12',
+  go:async()=>{vista('a2','todo');irTab('prueba');
+   if(wz.paso<2){wz.disc='running';wz.elena=true;empezar();const p=DISC.running.prods;Object.assign(wz,{paso:2,a:p[0].id,b:p[1].id,pa:{c:5,a:4,s:5},pb:{c:4,a:3,s:3}});}
+   wz.paso=3;wz.reco=null;renderTablet();await espera(150);enfocar('#tabCuerpo .alerta.ok');await espera(1200);
+   wz.motivo='Más estabilidad para tu pisada pronadora';wz.paso=4;renderTablet();await espera(150);
+   const bp=qTxt('#tabCuerpo button','permiso');if(bp){enfocar(bp);await tocar(bp);}pedirPermisoMovil();irApp('inicio');await espera(450);try{cerrarPush();}catch(e){}
+   const pt=q('#appCuerpo .peticion');if(pt){enfocar(pt);await espera(700);const a=q('#pPerfil'),b=q('#pComunic');
+     if(a){await tocar(a);a.checked=true;}if(b){await tocar(b);b.checked=true;}const bc=qTxt('#appCuerpo .peticion button','Confirmar');if(bc)await tocar(bc);}
+   responderPermiso(true);renderTablet();await espera(500);
+   const br=qTxt('#tabCuerpo button','Registrar prueba');if(br){enfocar(br);await tocar(br);}
+   D2.bloqPerfil=Date.now()+1600;registrar();irApp('perfilTec');window.scrollTo(0,0);await espera(300);enfocar('#movil');}},
+ {cap:'a2',t:'Si no compra, a las 72 horas recibe su comparativa',s:'1 de cada 10 clientes queda como grupo de control y no recibe avisos: así se mide el efecto real de cada mensaje.',r:'Tablas A13 y A14',
+  go:async()=>{vista('a2','todo');irTab('crm');avanzar(3);irTab('crm');await espera(250);enfocar('#tabCuerpo .tabla-scroll');await espera(1700);try{irApp('buzon');}catch(e){}window.scrollTo(0,0);enfocar('#movil');}},
+ {cap:'k',t:'Un cuadro de mando con los 36 KPI del plan',s:'Datos simulados a marzo de 2028, la puerta G3: el piloto se compara con las tiendas de control y el comité decide si se despliega.',r:'Tablas 19 y A18',
+  go:async()=>{kpiBase('general',14);await espera(500);enfocar('#kpi-escBanner');await espera(1800);enfocar('#kpi-proxPuerta');}},
+ {cap:'k',t:'Cada acción, con su semáforo y su ficha',s:'Meta, lectura, distancia a la meta y tendencia. Cada indicador abre su ficha con la fuente del TFM.',r:'Tablas A11 y A18',
+  go:async()=>{kpiBase('a1',14);await espera(500);enfocar('#kpi-a1Cards');await espera(1300);
+   const c=q('#kpi-a1Cards [data-id]');if(c){await tocar(c);c.click();await espera(450);enfocar('#kpi-detalle .k-det, #kpi-detalle');}}},
+ {cap:'k',t:'¿Y si el efecto es menor? El cuadro lo detecta',s:'Seis escenarios. En el pesimista (1,5 %) el piloto no supera G3: el plan se detiene antes de gastar en el despliegue.',r:'Tabla 25 y epígrafe 18.5',
+  go:async()=>{kpiBase('general',14);await espera(300);enfocar('#kpi-fEsc');await espera(900);await tocar('#kpi-fEsc');if(window.KPI)KPI.escenario('pes');await espera(500);enfocar('#kpi-escBanner');}},
+ {cap:'k',t:'De la línea base al despliegue, mes a mes',s:'Las puertas G1 a G5 deciden en cada fase si se sigue, se corrige o se para. Nada se escala sin superar al grupo de control.',r:'Tabla 19 y epígrafe 16.2',
+  go:async()=>{kpiBase('general',0);await espera(300);enfocar('#kpi-heroGeneral');
+   for(let c=1;c<=23;c++){if(D2.rapido){KPI.corte(23);break;}KPI.corte(c);await espera(150);}enfocar('#kpi-escBanner');}},
+ {pant:true,go:async()=>{
+   kpiBase('general',14);
+   pantalla(`<div><div class="logo-d2">${logoSVG()}</div><h1>Os lo dejamos para que lo probéis</h1><p class="lead">Las tres herramientas completas: la app de Elena, la caja, la tableta, la web y el cuadro de mando.</p>
+   <div class="d2-qrfila"><div class="d2-qr" id="d2QR"></div><div class="d2-qrtx"><b>En vuestro móvil</b><p>Escanead el código y entrad con vuestro correo de ESIC: cada uno tiene su propia cuenta de prueba con su historial.</p>
+   <p style="margin-top:14px"><b style="font-size:inherit;display:inline">En el ordenador</b><br><code>${typeof URL_PUBLICA!=='undefined'?URL_PUBLICA:''}</code></p></div></div></div>
+   <div class="d2-aviso">Prototipo académico del TFM del Máster GESCO de ESIC. No es una aplicación oficial de Decathlon. Datos simulados.</div>`);
+   const z=q('#d2QR');if(z&&typeof QRCode!=='undefined'&&typeof URL_PUBLICA!=='undefined'){try{new QRCode(z,{text:URL_PUBLICA+'#app',width:Math.round(Math.min(300,Math.max(200,innerHeight*.3))),height:Math.round(Math.min(300,Math.max(200,innerHeight*.3))),correctLevel:QRCode.CorrectLevel.M});}catch(e){}}
+ }}
+];
+const NUM=(()=>{let n=0;return PASOS2.map(p=>p.pant?0:++n);})();
+
+/* ---------- motor ---------- */
+async function correr(j,rapido){
+  const P=PASOS2[j];D2.i=j;D2.rapido=rapido;
+  if(!P.pant){sinPantalla();rotulo(P,NUM[j],NUM[NUM.length-2]);}
+  D2.objetivo=null;try{colaPush.length=0;cerrarPush();}catch(e){}try{cerrarHoja();}catch(e){}
+  try{document.activeElement&&document.activeElement.blur&&document.activeElement.blur();}catch(e){}
+  try{await P.go();}catch(e){console.warn('Demo 2 min, paso '+j,e);}
+  D2.rapido=false;
+}
+function ir(j){
+  j=Math.max(0,Math.min(PASOS2.length-1,j));
+  D2.dest=j;const g=++D2.gen;
+  D2.cola=D2.cola.then(async()=>{
+    if(g!==D2.gen)return; // se ha pulsado otra vez: solo cuenta la última
+    if(j===D2.i+1&&D2.i>=0){await correr(j,false);return;}
+    // salto o retroceso: estado limpio y repaso instantáneo de los pasos anteriores
+    D2.rapido=true;base();
+    for(let k=0;k<j;k++){await correr(k,true);}
+    await correr(j,false);
+  });
+}
+function siguiente(){if(!D2.t0&&D2.dest>=0)D2.t0=Date.now();if(D2.dest>=PASOS2.length-1)return;
+  if(D2.enCurso){D2.rapido=true;} // si el paso anterior aún se anima, termina al instante y pasa al siguiente
+  ir(D2.dest+1);}
+function anterior(){if(D2.dest<=0)return;if(D2.enCurso){D2.rapido=true;}ir(D2.dest-1);}
+function empezarDemo(){
+  if(D2.on)return;D2.on=true;D2.i=-1;D2.dest=-1;D2.t0=0;D2.gen++;D2.cola=Promise.resolve();
+  document.body.classList.add('demo2','foco');
+  const d=document.documentElement;if(d.requestFullscreen&&!document.fullscreenElement){try{const p=d.requestFullscreen();if(p&&p.catch)p.catch(()=>{});}catch(e){}}
+  base();ajustarFoco();requestAnimationFrame(bucle);ir(0);
+  try{history.replaceState(null,'','#demo');}catch(e){}
+}
+function salirDemo(){
+  if(!D2.on)return;D2.on=false;D2.gen++;D2.objetivo=null;
+  sinPantalla();cap.classList.remove('on');foco.classList.remove('on');dedo.classList.remove('on');reloj.classList.remove('on');blanco.classList.remove('on');
+  document.body.classList.remove('demo2');
+  try{salirFoco();}catch(e){}
+  try{history.replaceState(null,'','#a1');}catch(e){}
+}
+window.empezarDemo2=empezarDemo;window.salirDemo2=salirDemo;
+
+/* marca si hay un paso animándose, para que una pulsación rápida no deje nada a medias */
+const correr0=correr;
+correr=async function(j,r){D2.enCurso=true;try{await correr0(j,r);}finally{D2.enCurso=false;}};
+
+/* la ficha técnica del registro abre el perfil a los 900 ms: en el repaso instantáneo no debe mover la pantalla */
+const irApp0=window.irApp;
+window.irApp=function(p){if(p==='perfilTec'&&D2.on&&Date.now()<D2.bloqPerfil&&D2.i!==8)return;return irApp0.apply(this,arguments);};
+const verMovil0=window.verMovil;
+window.verMovil=function(){if(D2.on)return;return verMovil0.apply(this,arguments);};
+
+/* reloj discreto para el presentador (tecla R) */
+setInterval(()=>{if(!D2.on||!reloj.classList.contains('on'))return;const s=D2.t0?Math.floor((Date.now()-D2.t0)/1000):0;reloj.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+' de 2:00';reloj.style.color=s>120?'#E3262F':'#616161';},500);
+
+/* teclado y mando de presentaciones: se captura antes que el resto de atajos de la demo */
+document.addEventListener('keydown',e=>{
+  const k=e.key;
+  if(!D2.on){
+    if((k==='d'||k==='D')&&!e.metaKey&&!e.ctrlKey&&!e.altKey&&!e.target.matches('input,select,textarea')){e.preventDefault();empezarDemo();}
+    return;
+  }
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  const sig=['ArrowRight','ArrowDown','PageDown',' ','Enter','n','N'], ant=['ArrowLeft','ArrowUp','PageUp','Backspace','p','P'];
+  if(blanco.classList.contains('on')&&!['b','B','.','w','W'].includes(k)){blanco.classList.remove('on');e.preventDefault();e.stopImmediatePropagation();return;}
+  if(sig.includes(k))siguiente();
+  else if(ant.includes(k))anterior();
+  else if(k==='b'||k==='B'||k==='.'||k==='w'||k==='W')blanco.classList.toggle('on');
+  else if(k==='r'||k==='R')reloj.classList.toggle('on');
+  else if(k==='Home')ir(0);
+  else if(k==='End')ir(PASOS2.length-1);
+  else if(k==='Escape')salirDemo();
+  else if(k==='F5'||k==='Tab'){} // el botón de «iniciar presentación» del mando no recarga la página
+  else return;
+  e.preventDefault();e.stopImmediatePropagation();
+},true);
+/* un clic del mando que llegue como clic de ratón tampoco debe disparar nada por accidente sobre las pantallas */
+document.addEventListener('fullscreenchange',()=>{if(D2.on){document.body.classList.add('foco');setTimeout(()=>{ajustarFoco();},80);}});
+window.addEventListener('resize',()=>{if(D2.on&&cap.classList.contains('on'))document.documentElement.style.setProperty('--d2-cap',(cap.offsetHeight+28)+'px');});
+
+/* botón en la cabecera, junto a «Pantalla completa» */
+const bf=document.querySelector('.top .btn-foco');
+if(bf){const b=document.createElement('button');b.className='btn-foco d2-btn';b.title='Demo guiada de 2 minutos (tecla D). Se pasa con las flechas o con el mando';
+  b.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" style="vertical-align:-3px;margin-right:6px"><path d="M8 5v14l11-7z"/></svg><span class="lbl">Demo de 2 minutos</span>';
+  b.onclick=empezarDemo;bf.parentNode.insertBefore(b,bf);}
+{let u=location.href;try{const n=performance.getEntriesByType('navigation')[0];if(n&&n.name)u=n.name;}catch(e){}
+ if(/#demo$/.test(u)||/[?&]demo(=|&|#|$)/.test(u))setTimeout(empezarDemo,300);}
+})();
+</script>
 </body>
 </html>
