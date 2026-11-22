@@ -4644,7 +4644,7 @@ const portada=(k)=>({pant:true,go:async()=>{
    <div class="d2-pista">Avanza con <kbd>→</kbd> o con el mando · <kbd>←</kbd> vuelve · <kbd>Esc</kbd> sale</div></div>${AVISO}`);
 }});
 const cierreQR={pant:true,go:async()=>{
-   kpiBase('general',14);
+   vista('a2','todo');
    pantalla(`<div><div class="logo-d2">${logoSVG()}</div><h1>Os lo dejamos para que lo probéis</h1><p class="lead">Las tres herramientas completas: la app de Elena, la caja, la tableta, la web y el cuadro de mando.</p>
    <div class="d2-qrfila"><div class="d2-qr" id="d2QR"></div><div class="d2-qrtx"><b>En vuestro móvil</b><p>Escanead el código y entrad con vuestro correo de ESIC: cada uno tiene su propia cuenta de prueba con su historial.</p>
    <p style="margin-top:14px"><b style="font-size:inherit;display:inline">En el ordenador</b><br><code>${typeof URL_PUBLICA!=='undefined'?URL_PUBLICA:''}</code></p></div></div></div>${AVISO}`);
@@ -4652,21 +4652,22 @@ const cierreQR={pant:true,go:async()=>{
 }};
 const DEMOS={
  a1:{chip:'Acción 1',tit:'Rediseño de Decathlon Member',lead:'Un mismo programa en la tienda, la app y la web que premia también el deporte.',pasos:['a1app','a1caja','a1deporte','a1nivel','a1web']},
- a2:{chip:'Acción 2',tit:'Banco de Pruebas',lead:'Asesoramiento técnico guiado en tienda, conectado con la app y la web de Elena.',pasos:['a2vivo','a2reserva','a2agenda','a2medidas','a2compara','a2reco','a2permiso','a2registro','a2crm']},
- k:{chip:'Cuadro de mando',tit:'Cómo se controla el plan',lead:'Los KPI de las dos acciones, sus metas y las puertas de decisión, con datos simulados.',pasos:['kgen','kficha','kpes','kmes'],cierre:true},
- todo:{tit:'Las dos acciones, funcionando',lead:'La Acción 1, la Acción 2 y el cuadro de mando con el que se controlan.',pasos:null,cierre:true}
+ a2:{chip:'Acción 2',tit:'Banco de Pruebas',lead:'Asesoramiento técnico guiado en tienda, conectado con la app y la web de Elena.',pasos:['a2vivo','a2reserva','a2agenda','a2medidas','a2compara','a2reco','a2permiso','a2registro','a2crm'],cierre:true},
+ k:{chip:'Cuadro de mando',tit:'Cómo se controla el plan',lead:'Los KPI de las dos acciones, sus metas y las puertas de decisión, con datos simulados.',pasos:['kgen','kficha','kpes','kmes']},
+ todo:{tit:'Las dos acciones, funcionando',lead:'La Acción 1, la Acción 2 y el cuadro de mando con el que se controlan.',pasos:null}
 };
 DEMOS.todo.pasos=[...DEMOS.a1.pasos,...DEMOS.a2.pasos,...DEMOS.k.pasos];
 const ORDEN=['a1','a2','k'];
 let LISTA=[],NUM=[];
-function montar(k){D2.demo=k;LISTA=[portada(k),...DEMOS[k].pasos.map(id=>Object.assign({id},P[id]))];if(DEMOS[k].cierre)LISTA.push(cierreQR);let n=0;NUM=LISTA.map(p=>p.pant?0:++n);}
+function montar(k){D2.demo=k;LISTA=[portada(k)];DEMOS[k].pasos.forEach(id=>{LISTA.push(Object.assign({id},P[id]));if(id==='a2crm')LISTA.push(cierreQR);}); // el QR va justo después de la Acción 2
+  let n=0;NUM=LISTA.map(p=>p.pant?0:++n);}
 
 /* ---------- menú para elegir demo ---------- */
 function menu(sel){
   D2.gen++;D2.demo=null;D2.i=-1;D2.dest=-1;D2.sel=sel||D2.sel||'a1';D2.objetivo=null;
   const card=(k,n,txt)=>`<button class="d2-op ${D2.sel===k?'on':''}" style="--c:${C[k]}" data-d="${k}"><span class="d2-opn">${n}</span><b>${DEMOS[k].chip}</b><span>${DEMOS[k].tit}</span><small>${txt}</small></button>`;
   pantalla(`<div><div class="logo-d2">${logoSVG()}</div><h1>Demostración</h1><p class="lead">Elige qué enseñar. Cada demo empieza desde cero y se pasa con las flechas o con el mando.</p>
-   <div class="d2-menu">${card('a1',1,DEMOS.a1.pasos.length+' pasos')}${card('a2',2,DEMOS.a2.pasos.length+' pasos')}${card('k',3,DEMOS.k.pasos.length+' pasos y cierre con el QR')}</div>
+   <div class="d2-menu">${card('a1',1,DEMOS.a1.pasos.length+' pasos')}${card('a2',2,DEMOS.a2.pasos.length+' pasos y cierre con el QR')}${card('k',3,DEMOS.k.pasos.length+' pasos')}</div>
    <div class="d2-pista"><kbd>→</kbd> o el mando empieza la marcada · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> eligen · <kbd>4</kbd> las tres seguidas · <kbd>Esc</kbd> sale</div></div>${AVISO}`);
   pant.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>arrancar(b.dataset.d));
   reloj.classList.remove('on');
