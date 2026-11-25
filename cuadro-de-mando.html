@@ -1401,5 +1401,7 @@ window.KPI=KPI; // la demo comprueba window.KPI al abrir la pestaña
 {const v=document.getElementById('kpi');if(v&&getComputedStyle(v).display!=='none'){try{KPI.render()}catch(e){}}}
 </script>
 
-</body>
+<style>#kpi-rec{display:none!important}</style><script>/* El botón abre la simulación guiada del cuadro de mando en la demo; el recorrido interno queda oculto */
+(function(){function fijar(){var b=document.getElementById('kpi-recbtn');if(!b||b.dataset.sg)return;var n=b.cloneNode(true);n.dataset.sg='1';n.textContent='Simulación guiada';n.title='Abre la simulación guiada del cuadro de mando (se pasa con las flechas o el mando)';n.addEventListener('click',function(){location.href='./#demo-kpi';});b.parentNode.replaceChild(n,b);}
+if(document.readyState!=='loading')setTimeout(fijar,0);else document.addEventListener('DOMContentLoaded',function(){setTimeout(fijar,0);});window.addEventListener('load',function(){setTimeout(fijar,50);});})();</script></body>
 </html>

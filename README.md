@@ -4,7 +4,8 @@ Prototipo funcional del Trabajo Fin de Máster del Máster en Dirección de Mark
 
 | Parte | Enlace |
 |---|---|
-| App en el móvil (entrada con el correo de ESIC) | https://alvaroalonsoorigen-eng.github.io/tfm-decathlon-demo/#app |
+| App en el móvil: acceso con el correo de ESIC (es la dirección del QR; siempre pide el correo) | https://alvaroalonsoorigen-eng.github.io/tfm-decathlon-demo/#app-entrar |
+| App en el móvil: seguir con la cuenta ya abierta en ese móvil | https://alvaroalonsoorigen-eng.github.io/tfm-decathlon-demo/#app |
 | Acción 1 · App y caja | https://alvaroalonsoorigen-eng.github.io/tfm-decathlon-demo/#a1 |
 | Acción 1 · Web | https://alvaroalonsoorigen-eng.github.io/tfm-decathlon-demo/#web |
 | Acción 2 · Tableta | https://alvaroalonsoorigen-eng.github.io/tfm-decathlon-demo/#a2 |
